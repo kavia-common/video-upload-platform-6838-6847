@@ -1,6 +1,6 @@
 # Video Upload Backend (FastAPI)
 
-This service provides a REST API endpoint to upload video files with a maximum size of 500MB. Successful uploads are stored on disk in the `/upload` directory.
+This service provides a REST API endpoint to upload video files with a maximum size of 500MB. Successful uploads are stored on disk in the `./upload` directory by default (configurable via the `UPLOAD_DIR` environment variable).
 
 ## Features
 
@@ -8,7 +8,7 @@ This service provides a REST API endpoint to upload video files with a maximum s
 - Upload endpoint: `POST /upload`
 - Size limit: 500 MB
 - Files are streamed and validated server-side to avoid reading the entire file into memory
-- Files saved under `/upload` with unique, timestamped names
+- Files are saved under the configured upload directory with unique, timestamped names
 - Robust error handling with standardized JSON error responses
 
 ## Running locally
@@ -31,7 +31,7 @@ The API will be available at: `http://localhost:8000`
 - ReDoc: `http://localhost:8000/redoc`
 - Usage helper: `http://localhost:8000/docs/usage`
 
-Note: The service will attempt to create `/upload` on startup. Ensure the process has permission to write to this path. If you prefer a different path, update `UPLOAD_DIR` in `src/api/main.py`.
+Note: The service will attempt to create the upload directory on startup (default `./upload`). Ensure the process has permission to write to this path. If you prefer a different path, set the `UPLOAD_DIR` environment variable or update `UPLOAD_DIR` in `src/api/main.py`.
 
 ## API
 

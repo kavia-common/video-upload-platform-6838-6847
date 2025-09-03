@@ -10,14 +10,16 @@ from pydantic import BaseModel, Field
 
 # Constants
 MAX_FILE_SIZE_BYTES = 500 * 1024 * 1024  # 500 MB
-UPLOAD_DIR = "/upload"
+# Use a writable relative directory instead of an absolute root path to avoid PermissionError
+# The directory is relative to the working directory where the app is started.
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", "./upload")
 
 # Application with metadata and tags for OpenAPI
 app = FastAPI(
     title="Video Upload Backend",
     description=(
         "REST API for uploading video files. "
-        "Enforces a 500MB size limit per file and stores accepted files in the /upload directory."
+        "Enforces a 500MB size limit per file and stores accepted files in the upload directory."
     ),
     version="1.0.0",
     openapi_tags=[
@@ -69,7 +71,7 @@ def health_check():
 # Ensure upload directory exists on startup
 @app.on_event("startup")
 def ensure_upload_dir() -> None:
-    """Create the /upload directory if it does not exist."""
+    """Create the upload directory if it does not exist."""
     try:
         os.makedirs(UPLOAD_DIR, exist_ok=True)
     except Exception as exc:  # pragma: no cover
@@ -148,7 +150,7 @@ async def _enforce_file_size(file: UploadFile) -> int:
     summary="Upload a video file (max 500MB)",
     description=(
         "Accepts a single video file via multipart/form-data with the field name 'file'. "
-        "The file is validated to be at most 500MB. On success, it is saved into the /upload directory."
+        "The file is validated to be at most 500MB. On success, it is saved into the configured upload directory."
     ),
 )
 async def upload_video(file: UploadFile = File(..., description="The video file to upload.")) -> UploadResponse:
